@@ -67,42 +67,25 @@ func Record(opt options.Option) (hlsPlaylistEnd bool, dbName string, err error) 
 			_, _, opt.NicoSession, _ = options.LoadNicoAccount(opt.NicoLoginAlias)
 		}
 
-		if (! opt.NicoRtmpOnly) {
-			var done bool
-			var notLogin bool
-			var reserved bool
-			done, hlsPlaylistEnd, notLogin, reserved, dbName, err = NicoRecHls(opt)
-			if done {
-				return
-			}
-			if err != nil {
-				return
-			}
-			if notLogin {
-				fmt.Println("not_login")
-				if err = NicoLogin(opt); err != nil {
-					return
-				}
-				continue
-			}
-			if reserved {
-				continue
-			}
+		var done bool
+		var notLogin bool
+		var reserved bool
+		done, hlsPlaylistEnd, notLogin, reserved, dbName, err = NicoRecHls(opt)
+		if done {
+			return
 		}
-
-		if (! opt.NicoHlsOnly) {
-			notLogin, e := NicoRecRtmp(opt)
-			if e != nil {
-				err = e
+		if err != nil {
+			return
+		}
+		if notLogin {
+			fmt.Println("not_login")
+			if err = NicoLogin(opt); err != nil {
 				return
 			}
-			if notLogin {
-				fmt.Println("not_login")
-				if err = NicoLogin(opt); err != nil {
-					return
-				}
-				continue
-			}
+			continue
+		}
+		if reserved {
+			continue
 		}
 
 		break
